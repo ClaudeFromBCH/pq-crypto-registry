@@ -1,0 +1,6 @@
+Review use of private: true in package.json(s)
+Review all files in /data
+Review TS configs
+Review schema.ts and validate-content.mjs as these have hardcoded values for allowlists
+Review methodology page
+Consider removing tags if not needed

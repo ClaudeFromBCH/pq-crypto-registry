@@ -1,0 +1,26 @@
+## Overview
+
+ML-KEM (formerly Kyber) is a lattice-based key encapsulation mechanism standardised in
+[FIPS 203](https://csrc.nist.gov/pubs/fips/203/final). It provides IND-CCA2 security under
+the Module Learning With Errors (MLWE) assumption.
+
+## Security basis
+
+Security reduces to the hardness of MLWE over module lattices. No known classical or quantum
+algorithm solves MLWE at these parameters in sub-exponential time.
+
+## Key characteristics
+
+- **Deterministic encapsulation** — given a public key and random seed, encapsulation is
+  deterministic, simplifying testing and reducing entropy requirements at the call site.
+- **Compact ciphertexts** — ciphertext sizes range from 768 to 1,568 bytes, making ML-KEM
+  suitable for TLS and similar bandwidth-constrained protocols.
+- **Fast operations** — key generation, encapsulation, and decapsulation are all dominated
+  by NTT operations and are fast on commodity hardware.
+
+## Considerations
+
+Implementations must protect the decapsulation step against side-channel leakage. The
+Fujisaki–Okamoto transform used internally re-encrypts during decapsulation, and any
+timing variation in the comparison can leak the shared secret. Constant-time comparison
+and implicit rejection are mandatory per the FIPS 203 specification.

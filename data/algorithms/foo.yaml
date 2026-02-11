@@ -1,0 +1,26 @@
+id: foo
+name: Foo
+primitive: digital-signature
+assumption: code-based
+security:
+  assumption: Syndrome Decoding
+  security_notion: EUF-CMA
+  deterministic: true
+  statefulness: stateless
+performance:
+  relative:
+    keygen: slow
+    sign: medium
+    verify: fast
+risk:
+  assumption: medium
+  implementation: medium
+  side_channel: low
+parameter_sets:
+  - name: Foo-128
+    nist_level: 1
+    sizes: { pk_bytes: 8192, sk_bytes: 16384, sig_bytes: 512 }
+capabilities: []
+implementations: []
+tags:
+  - code-based

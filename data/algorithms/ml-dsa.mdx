@@ -1,0 +1,25 @@
+## Overview
+
+ML-DSA (formerly Dilithium) is a lattice-based digital signature scheme standardised in
+[FIPS 204](https://csrc.nist.gov/pubs/fips/204/final). It relies on the hardness of the
+Module Learning With Errors (MLWE) problem over structured lattices.
+
+## Security basis
+
+The scheme's security reduces to MLWE and Module-SIS over polynomial rings. No classical or
+quantum algorithm is known to solve these problems in sub-exponential time for the parameters
+chosen at any of the three security levels.
+
+## Key characteristics
+
+- **Randomised signing** — each signature includes fresh randomness, avoiding deterministic
+  nonce-reuse pitfalls but requiring a reliable entropy source.
+- **Stateless** — no counter or state needs to be maintained between signing operations.
+- **Compact verification** — verification is dominated by a single NTT and a few vector
+  operations, making it fast relative to signing.
+
+## Considerations
+
+Side-channel resistance depends on the implementation. Variable-time rejection sampling in
+the signing loop is a known vector; constant-time implementations (e.g., the NIST reference
+code with `_ct` variants) mitigate this at a moderate performance cost.
