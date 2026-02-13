@@ -1,0 +1,204 @@
+# ── Algorithms ────────────────────────────────────────────────────────
+
+- term: ML-DSA
+  slug: ml-dsa
+  definition: >-
+    Module-Lattice-Based Digital Signature Algorithm. A post-quantum
+    signature scheme standardised in FIPS 204, formerly known as
+    Dilithium. Based on the Module-LWE and Module-SIS problems.
+
+- term: ML-KEM
+  slug: ml-kem
+  definition: >-
+    Module-Lattice-Based Key-Encapsulation Mechanism. A post-quantum KEM
+    standardised in FIPS 203, formerly known as Kyber. Based on the
+    Module-LWE problem.
+
+- term: SLH-DSA
+  slug: slh-dsa
+  definition: >-
+    Stateless Hash-Based Digital Signature Algorithm. A post-quantum
+    signature scheme standardised in FIPS 205, formerly known as
+    SPHINCS+. Based solely on hash function security.
+
+- term: Dilithium
+  slug: dilithium
+  definition: >-
+    The original academic name for the lattice-based signature scheme now
+    standardised as ML-DSA in FIPS 204.
+
+- term: Kyber
+  slug: kyber
+  definition: >-
+    The original academic name for the lattice-based KEM now standardised
+    as ML-KEM in FIPS 203.
+
+# ── Hardness assumptions ─────────────────────────────────────────────
+
+- term: Module-LWE
+  slug: module-lwe
+  definition: >-
+    Module Learning With Errors. A lattice problem where the adversary must
+    distinguish noisy inner products over a module lattice from uniform
+    randomness. Underpins ML-KEM and ML-DSA.
+
+- term: Module-SIS
+  slug: module-sis
+  definition: >-
+    Module Short Integer Solution. A lattice problem requiring finding a
+    short vector in the kernel of a random matrix over a module lattice.
+    Used alongside Module-LWE in ML-DSA.
+
+- term: Ring-LWE
+  slug: ring-lwe
+  definition: >-
+    Ring Learning With Errors. A structured variant of LWE where
+    computations are performed in a polynomial ring, enabling more compact
+    keys and faster operations.
+
+- term: LWE
+  slug: lwe
+  definition: >-
+    Learning With Errors. A lattice problem where the adversary must recover
+    a secret vector from noisy linear equations. The foundational hardness
+    assumption for most lattice-based cryptography.
+
+# ── Security notions ─────────────────────────────────────────────────
+
+- term: EUF-CMA
+  slug: euf-cma
+  definition: >-
+    Existential Unforgeability under Chosen Message Attack. The standard
+    security notion for digital signatures — an adversary with access to a
+    signing oracle cannot produce a valid signature on any new message.
+
+- term: IND-CCA2
+  slug: ind-cca2
+  definition: >-
+    Indistinguishability under Adaptive Chosen Ciphertext Attack. The
+    strongest standard security notion for encryption and KEMs — an
+    adversary with access to a decryption oracle cannot distinguish
+    ciphertexts.
+
+- term: IND-CPA
+  slug: ind-cpa
+  definition: >-
+    Indistinguishability under Chosen Plaintext Attack. A security notion
+    where an adversary who can obtain encryptions of chosen plaintexts
+    cannot distinguish ciphertexts. Weaker than IND-CCA2.
+
+# ── Primitives & concepts ───────────────────────────────────────────
+
+- term: KEM
+  slug: kem
+  definition: >-
+    Key Encapsulation Mechanism. A public-key primitive that produces a
+    shared secret and a ciphertext. The recipient uses their secret key to
+    decapsulate the shared secret from the ciphertext.
+
+- term: digital signature
+  slug: digital-signature
+  definition: >-
+    A cryptographic primitive that allows a signer to produce a signature
+    on a message using a secret key, and anyone with the corresponding
+    public key can verify the signature's authenticity.
+
+- term: NTT
+  slug: ntt
+  definition: >-
+    Number Theoretic Transform. A finite-field analogue of the FFT used to
+    multiply polynomials efficiently. Core to the performance of
+    lattice-based schemes like ML-KEM and ML-DSA.
+
+- term: Fujisaki-Okamoto transform
+  slug: fujisaki-okamoto
+  definition: >-
+    A generic construction that converts a passively secure (IND-CPA)
+    public-key encryption scheme into an actively secure (IND-CCA2) KEM by
+    re-encrypting during decapsulation and checking consistency.
+
+- term: side-channel
+  slug: side-channel
+  definition: >-
+    An attack that exploits information leaked through physical
+    implementation characteristics — timing, power consumption,
+    electromagnetic emissions — rather than mathematical weaknesses.
+
+- term: NIST security level
+  slug: nist-security-level
+  definition: >-
+    A classification (1 through 5) defined by NIST for post-quantum
+    schemes. Level 1 targets security equivalent to AES-128, Level 3 to
+    AES-192, and Level 5 to AES-256. Levels 2 and 4 target SHA-256 and
+    SHA-384 collision resistance respectively.
+
+- term: stateless
+  slug: stateless
+  definition: >-
+    A property of a signature scheme where the signer does not need to
+    maintain any state between signing operations. Each signature is
+    independent, simplifying deployment.
+
+- term: stateful
+  slug: stateful
+  definition: >-
+    A property of a signature scheme where the signer must track state
+    (e.g. a counter) between operations. Reusing state can be catastrophic,
+    making deployment more complex.
+
+# ── Standards & bodies ───────────────────────────────────────────────
+
+- term: NIST
+  slug: nist
+  definition: >-
+    National Institute of Standards and Technology. The US standards body
+    running the Post-Quantum Cryptography Standardization Process, which
+    has selected ML-KEM, ML-DSA, and SLH-DSA as initial standards.
+
+- term: FIPS 203
+  slug: fips-203
+  definition: >-
+    Federal Information Processing Standard 203. The NIST standard
+    specifying ML-KEM (Module-Lattice-Based Key-Encapsulation Mechanism).
+
+- term: FIPS 204
+  slug: fips-204
+  definition: >-
+    Federal Information Processing Standard 204. The NIST standard
+    specifying ML-DSA (Module-Lattice-Based Digital Signature Algorithm).
+
+- term: FIPS 205
+  slug: fips-205
+  definition: >-
+    Federal Information Processing Standard 205. The NIST standard
+    specifying SLH-DSA (Stateless Hash-Based Digital Signature Algorithm).
+
+# ── Assumption families ──────────────────────────────────────────────
+
+- term: lattice
+  slug: lattice
+  definition: >-
+    A discrete additive subgroup of Rⁿ. Lattice-based cryptography builds
+    on the computational hardness of problems like finding short vectors
+    (SVP) or closest vectors (CVP) in high-dimensional lattices.
+
+- term: hash-based
+  slug: hash-based
+  definition: >-
+    Cryptographic schemes whose security relies solely on the properties of
+    hash functions (collision resistance, preimage resistance). Considered
+    conservative because the security assumption is minimal.
+
+- term: code-based
+  slug: code-based
+  definition: >-
+    Cryptographic schemes built on the hardness of decoding random linear
+    codes. The McEliece cryptosystem (1978) is the oldest post-quantum
+    proposal in this family.
+
+- term: isogeny-based
+  slug: isogeny-based
+  definition: >-
+    Cryptographic schemes built on the hardness of computing isogenies
+    between elliptic curves. A newer family with compact key sizes but
+    less mature cryptanalysis.

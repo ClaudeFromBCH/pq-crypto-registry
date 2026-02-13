@@ -1,0 +1,71 @@
+id: ml-kem
+name: ML-KEM
+primitive: kem
+assumption: lattice
+standardization:
+  status: standard
+  body: NIST
+  reference: FIPS 203
+security:
+  assumption: Module-LWE
+  security_notion: IND-CCA2
+  deterministic: true
+  statefulness: stateless
+performance:
+  relative:
+    keygen: fast
+    encaps: fast
+    decaps: fast
+  benchmarks:
+    platform: "Intel Core i7-1365U (Alder Lake)"
+    source: liboqs 0.10.0
+    entries:
+      - parameter_set: ML-KEM-512
+        keygen_us: 36
+        encaps_us: 46
+        decaps_us: 52
+      - parameter_set: ML-KEM-768
+        keygen_us: 58
+        encaps_us: 72
+        decaps_us: 78
+      - parameter_set: ML-KEM-1024
+        keygen_us: 88
+        encaps_us: 104
+        decaps_us: 112
+risk:
+  assumption: low
+  implementation: low
+  side_channel: medium
+parameter_sets:
+  - name: ML-KEM-512
+    nist_level: 1
+    sizes: { pk_bytes: 800, sk_bytes: 1632, ct_bytes: 768, ss_bytes: 32 }
+  - name: ML-KEM-768
+    nist_level: 3
+    sizes: { pk_bytes: 1184, sk_bytes: 2400, ct_bytes: 1088, ss_bytes: 32 }
+  - name: ML-KEM-1024
+    nist_level: 5
+    sizes: { pk_bytes: 1568, sk_bytes: 3168, ct_bytes: 1568, ss_bytes: 32 }
+capabilities:
+  - key-agreement
+  - forward-secrecy
+  - hardware-friendly
+  - hybrid-mode
+implementations:
+  - name: liboqs
+    language: C
+    href: https://github.com/open-quantum-safe/liboqs
+    audited: true
+  - name: pqcrypto
+    language: Rust
+    href: https://github.com/rustpq/pqcrypto
+    audited: false
+  - name: crystals-kyber (ref)
+    language: C
+    href: https://github.com/pq-crystals/kyber
+    audited: false
+tags:
+  - lattice
+  - module-lwe
+  - fips-203
+  - kem
