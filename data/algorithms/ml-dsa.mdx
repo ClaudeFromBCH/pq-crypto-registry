@@ -1,25 +1,37 @@
 ## Overview
 
-ML-DSA (formerly Dilithium) is a lattice-based digital signature scheme standardised in
-[FIPS 204](https://csrc.nist.gov/pubs/fips/204/final). It relies on the hardness of the
-Module Learning With Errors (MLWE) problem over structured lattices.
+ML-DSA (formerly Dilithium) is a lattice-based digital signature scheme standardized in
+[FIPS 204](https://csrc.nist.gov/pubs/fips/204/final). It is the primary NIST-recommended
+post-quantum digital signature algorithm for general-purpose use, suitable for document
+signing, code signing, TLS authentication, and certificate issuance.
 
 ## Security basis
 
-The scheme's security reduces to MLWE and Module-SIS over polynomial rings. No classical or
-quantum algorithm is known to solve these problems in sub-exponential time for the parameters
-chosen at any of the three security levels.
+Security relies jointly on the hardness of Module-LWE and Module-SIS (Short Integer
+Solution) over polynomial rings. Both problems benefit from decades of study in the
+lattice cryptography literature. The scheme follows the Fiat-Shamir with Aborts paradigm,
+where signing may require multiple attempts before producing a valid signature that does
+not leak information about the secret key. No known classical or quantum algorithm
+threatens the selected parameters.
 
 ## Key characteristics
 
-- **Randomised signing** — each signature includes fresh randomness, avoiding deterministic
-  nonce-reuse pitfalls but requiring a reliable entropy source.
-- **Stateless** — no counter or state needs to be maintained between signing operations.
-- **Compact verification** — verification is dominated by a single NTT and a few vector
-  operations, making it fast relative to signing.
+- **Hedged signing** — FIPS 204 supports both deterministic and randomized signing modes.
+  Randomized signing (hedged mode) mixes additional randomness to provide resilience
+  against certain fault and side-channel attacks.
+- **Rejection sampling** — the signing algorithm uses rejection sampling (abort and retry)
+  to ensure signatures are statistically independent of the secret key, which is essential
+  for security but means signing time has some variance.
+- **Moderate sizes** — public keys range from 1,312 to 2,592 bytes and signatures from
+  2,420 to 4,627 bytes, larger than classical ECDSA but manageable for most protocols.
+- **Fast verification** — verification is dominated by a single NTT and matrix-vector
+  multiplication, making it substantially faster than signing.
 
 ## Considerations
 
-Side-channel resistance depends on the implementation. Variable-time rejection sampling in
-the signing loop is a known vector; constant-time implementations (e.g., the NIST reference
-code with `_ct` variants) mitigate this at a moderate performance cost.
+Correct constant-time implementation of the rejection sampling loop is critical.
+Implementations that leak timing information about the number of signing attempts can
+compromise the secret key. The secret key in FIPS 204 includes the public key, adding
+32 bytes beyond what the pre-standard Dilithium specification used. Batch verification
+is possible and yields meaningful speedups when verifying many signatures under the
+same or different public keys.

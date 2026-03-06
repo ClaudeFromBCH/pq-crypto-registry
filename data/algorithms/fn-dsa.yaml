@@ -1,0 +1,55 @@
+id: fn-dsa
+name: FN-DSA
+primitive: digital-signature
+assumption: lattice
+standardization:
+  status: draft
+  body: NIST
+  reference: FIPS 206
+security:
+  assumption: NTRU lattice problems (Short Integer Solution over NTRU lattices)
+  security_notion: EUF-CMA
+  deterministic: false
+  statefulness: stateless
+performance:
+  relative:
+    keygen: slow
+    sign: medium
+    verify: fast
+risk:
+  assumption: low
+  implementation: high
+  side_channel: high
+parameter_sets:
+  # Sizes from Falcon round 3 submission specification (compressed/CT format).
+  # Final FIPS 206 sizes may differ slightly.
+  - name: FN-DSA-512
+    nist_level: 1
+    sizes: { pk_bytes: 897, sk_bytes: 1281, sig_bytes: 666 }
+  - name: FN-DSA-1024
+    nist_level: 5
+    sizes: { pk_bytes: 1793, sk_bytes: 2305, sig_bytes: 1280 }
+capabilities:
+  - hardware-friendly
+  - hybrid-mode
+implementations:
+  - name: falcon (ref)
+    language: Python
+    href: https://github.com/tprest/falcon.py
+    audited: false
+  - name: liboqs
+    language: C
+    href: https://github.com/open-quantum-safe/liboqs
+    audited: true
+  - name: pqcrypto
+    language: Rust
+    href: https://github.com/rustpq/pqcrypto
+    audited: false
+references:
+  - https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization
+  - https://falcon-sign.info/
+tags:
+  - lattice
+  - digital-signature
+  - stateless
+  - ntru

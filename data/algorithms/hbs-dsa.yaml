@@ -1,0 +1,55 @@
+id: hbs-bitcoin
+name: Hash-based Signatures for Bitcoin
+primitive: digital-signature
+assumption: hash-based
+standardization:
+  status: research
+  body: Blockstream Research
+  reference: ePrint 2025/2203
+security:
+  assumption: Hash function second-preimage resistance (SHA-256)
+  security_notion: EUF-CMA
+  deterministic: false
+  statefulness: stateless
+performance:
+  relative:
+    keygen: fast
+    sign: slow
+    verify: medium
+  # No benchmarks block — the paper discusses signing cost in hash calls
+  # but does not provide CPU cycle benchmarks on a specific platform.
+risk:
+  assumption: low
+  implementation: medium
+  side_channel: low
+parameter_sets:
+  # Parameter sets from ePrint 2025/2203 (Kudinov & Nick, Blockstream Research).
+  # These are optimized SPHINCS+ variants (SPHINCS+C, TL-WOTS-TW, PORS+FP)
+  # tuned for Bitcoin with reduced signature-per-key limits.
+  # NIST Level 1 (128-bit classical security). pk = 32 bytes, sk = 64 bytes.
+  # Signature sizes from the bitcoindev mailing list summary (Dec 2025).
+  - name: hbs-btc-2e40
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 64, sig_bytes: 4036 }
+  - name: hbs-btc-2e30
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 64, sig_bytes: 3440 }
+  - name: hbs-btc-2e20
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 64, sig_bytes: 3128 }
+capabilities:
+  - hardware-friendly
+  - hybrid-mode
+implementations:
+  - name: SPHINCS-Parameters
+    language: Python
+    href: https://github.com/BlockstreamResearch/SPHINCS-Parameters
+    audited: false
+references:
+  - https://eprint.iacr.org/2025/2203
+  - https://delvingbitcoin.org/t/shrincs-324-byte-stateful-post-quantum-signatures-with-static-backups/2158
+tags:
+  - hash-based
+  - digital-signature
+  - stateless
+  - bitcoin

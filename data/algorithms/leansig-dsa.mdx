@@ -1,0 +1,45 @@
+## Overview
+
+leanSig is a hash-based signature scheme designed for Ethereum's post-quantum consensus layer,
+introduced by Drake, Khovratovich, Kudinov, and Wagner. The foundational framework is
+described in ["Hash-Based Multi-Signatures for Post-Quantum Ethereum"](https://eprint.iacr.org/2025/055)
+(IACR Communications in Cryptology, 2025), with an optimized instantiation in
+["Technical Note: LeanSig for Post-Quantum Ethereum"](https://eprint.iacr.org/2025/1332).
+leanSig is a variant of XMSS optimized for SNARK-based signature aggregation, using the
+Poseidon2 hash function over 31-bit prime fields to enable efficient proof generation in
+arithmetic circuits.
+
+## Security basis
+
+leanSig's security relies on hash function properties (second-preimage resistance,
+pseudorandomness) of the Poseidon2 hash function, analyzed in the standard model without
+random oracle assumptions. This is a deliberate design choice: treating the hash function as a
+random oracle while simultaneously requiring it to be efficiently representable as an
+arithmetic circuit for SNARK aggregation would be contradictory. The scheme targets 128 bits
+of classical security and 64 bits of quantum security. Poseidon2 is a relatively new hash
+function (2023) with active cryptanalysis efforts funded by the Ethereum Foundation, but it
+has less cryptanalytic history than SHA-2 or SHA-3.
+
+## Key characteristics
+
+- **SNARK-aggregatable** — individual validator signatures (each approximately 2.5 KB) are
+  aggregated using a STARK proof, producing a single compact proof that all N signatures
+  are valid. This is the critical property enabling post-quantum Ethereum consensus at scale.
+- **Stateful with synchronized signing** — leanSig uses an XMSS-like Merkle tree with a
+  fixed key lifetime (2^32 slots, approximately 8 years). Ethereum's one-signature-per-slot
+  discipline makes statefulness manageable in this context.
+- **Poseidon2-native** — all internal hash operations use Poseidon2 over small prime fields,
+  which is efficiently representable in SNARK circuits but is not a traditional hash function.
+- **Incomparable encodings** — the 2025/1332 instantiation uses a novel encoding technique
+  from Khovratovich, Kudinov, and Wagner (Crypto 2025) that improves the tradeoff between
+  signature size and verification hashing cost.
+
+## Considerations
+
+leanSig is an active research proposal, not a deployed standard. Its security depends on the
+Poseidon2 hash function, which has substantially less cryptanalytic scrutiny than SHA-2 or
+SHAKE. The scheme is purpose-built for Ethereum consensus and is not intended as a
+general-purpose signature scheme. Deploying leanSig requires a full SNARK proving pipeline
+for aggregation, which is itself complex infrastructure. Key lifetime is bounded (2^32 signing
+operations), after which validators must generate and distribute new public keys. The
+Ethereum Foundation's Lean Consensus roadmap targets deployment in the 2027-2030 timeframe.

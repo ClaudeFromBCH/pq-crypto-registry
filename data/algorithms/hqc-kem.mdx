@@ -1,0 +1,39 @@
+## Overview
+
+HQC (Hamming Quasi-Cyclic) is a code-based key encapsulation mechanism selected by NIST for
+standardization in March 2025 as the fifth post-quantum algorithm and second KEM, intended
+as a backup to ML-KEM based on a different hardness assumption. The selection is documented in
+[NIST IR 8545](https://nvlpubs.nist.gov/nistpubs/ir/2025/NIST.IR.8545.pdf). NIST plans to
+publish a draft standard for public comment, with a final standard expected in 2027.
+
+## Security basis
+
+HQC's IND-CPA security relies on the Quasi-Cyclic Syndrome Decoding (QCSD) problem, which
+asks an adversary to find a low-weight error vector given a syndrome computed with a
+quasi-cyclic parity check matrix. The IND-CCA2 KEM is obtained by applying the
+Fujisaki-Okamoto transform to the underlying CPA-secure public-key encryption scheme.
+Code-based cryptography has been studied since McEliece's original proposal in 1978, and the
+syndrome decoding problem is known to be NP-hard in general. QCSD adds quasi-cyclic
+structure for efficiency while maintaining security against known attacks.
+
+## Key characteristics
+
+- **Alternative assumption** — HQC is based on error-correcting codes rather than lattices,
+  providing assumption diversity relative to ML-KEM.
+- **Larger sizes** — public keys and ciphertexts are roughly 3-4 times the size of the
+  corresponding ML-KEM parameters at equivalent security levels.
+- **Concatenated codes** — HQC uses a hybrid of Reed-Muller and Reed-Solomon codes for
+  error correction, achieving an extremely low decryption failure rate.
+- **Three parameter sets** — HQC-128, HQC-192, and HQC-256 target NIST Levels 1, 3, and
+  5 respectively.
+
+## Considerations
+
+HQC's primary tradeoff is larger key and ciphertext sizes compared to ML-KEM. At NIST Level
+1, the public key is 2,241 bytes and the ciphertext is 4,433 bytes, compared to 800 and 768
+bytes for ML-KEM-512. This makes HQC less suitable for protocols where bandwidth is at a
+premium, but acceptable for applications where assumption diversity is prioritized. NIST has
+stated that HQC is not intended to replace ML-KEM for general use, but rather to provide a
+fallback standard in case lattice-based assumptions are compromised. Implementations should
+protect the decapsulation path against timing leaks, as with any KEM using the
+Fujisaki-Okamoto transform.

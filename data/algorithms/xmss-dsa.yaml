@@ -1,0 +1,59 @@
+id: xmss
+name: XMSS
+primitive: digital-signature
+assumption: hash-based
+standardization:
+  status: standard
+  body: IETF
+  reference: RFC 8391
+security:
+  assumption: Hash function second-preimage resistance and pseudorandomness
+  security_notion: EUF-CMA
+  deterministic: true
+  statefulness: stateful
+performance:
+  relative:
+    keygen: slow
+    sign: medium
+    verify: fast
+risk:
+  assumption: low
+  implementation: high
+  side_channel: low
+parameter_sets:
+  # Sizes computed from RFC 8391 formulas. For n=32, w=16: len=67.
+  # pk = 4 (OID) + n (root) + n (SEED) = 68 bytes.
+  # sig = ceil(h/8) + n + len*n + h*n.
+  # sk (compact, pseudorandom keygen) = 4 (OID) + 4 (idx) + 4*n = 136 bytes.
+  - name: XMSS-SHA2_10_256
+    nist_level: 1
+    sizes: { pk_bytes: 68, sk_bytes: 136, sig_bytes: 2498 }
+  - name: XMSS-SHA2_16_256
+    nist_level: 1
+    sizes: { pk_bytes: 68, sk_bytes: 136, sig_bytes: 2690 }
+  - name: XMSS-SHA2_20_256
+    nist_level: 1
+    sizes: { pk_bytes: 68, sk_bytes: 136, sig_bytes: 2819 }
+capabilities:
+  - forward-secrecy
+  - hardware-friendly
+implementations:
+  - name: xmss-reference
+    language: C
+    href: https://github.com/XMSS/xmss-reference
+    audited: false
+  - name: liboqs
+    language: C
+    href: https://github.com/open-quantum-safe/liboqs
+    audited: true
+  - name: xmss (Fox Crypto)
+    language: C
+    href: https://github.com/FoxCryptoNL/xmss-library
+    audited: false
+references:
+  - https://www.rfc-editor.org/rfc/rfc8391
+  - https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-208.pdf
+tags:
+  - hash-based
+  - digital-signature
+  - stateful

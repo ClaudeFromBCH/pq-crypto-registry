@@ -24,7 +24,11 @@ export const ALLOWED_TAGS = [
   'kem',
   'digital-signature',
   'stateful',
-  'stateless'
+  'stateless',
+  'ntru',
+  'qcsd',
+  'bitcoin',
+  'ethereum'
 ] as const;
 
 export const ALLOWED_CAPABILITIES = [
@@ -35,7 +39,8 @@ export const ALLOWED_CAPABILITIES = [
   'hardware-friendly',
   'hybrid-mode',
   'forward-secrecy',
-  'key-agreement'
+  'key-agreement',
+  'snark-aggregation'
 ] as const;
 
 // ── Shared enums ────────────────────────────────────────────────────

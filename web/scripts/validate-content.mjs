@@ -28,7 +28,11 @@ const ALLOWED_TAGS = [
   'kem',
   'digital-signature',
   'stateful',
-  'stateless'
+  'stateless',
+  'ntru',
+  'qcsd',
+  'bitcoin',
+  'ethereum'
 ];
 
 const ALLOWED_CAPABILITIES = [
@@ -39,7 +43,8 @@ const ALLOWED_CAPABILITIES = [
   'hardware-friendly',
   'hybrid-mode',
   'forward-secrecy',
-  'key-agreement'
+  'key-agreement',
+  'snark-aggregation'
 ];
 
 // ── Schema ──────────────────────────────────────────────────────────

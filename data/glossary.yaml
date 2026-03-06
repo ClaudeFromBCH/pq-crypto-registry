@@ -33,6 +33,53 @@
     The original academic name for the lattice-based KEM now standardised
     as ML-KEM in FIPS 203.
 
+- term: FN-DSA
+  slug: fn-dsa
+  definition: >-
+    FFT over NTRU-Lattice-Based Digital Signature Algorithm. A post-quantum
+    digital signature scheme selected by NIST for standardization as FIPS 206,
+    formerly known as Falcon. Produces the smallest signatures among NIST PQC
+    signature standards.
+
+- term: HQC
+  slug: hqc
+  definition: >-
+    Hamming Quasi-Cyclic. A code-based key encapsulation mechanism selected
+    by NIST in March 2025 for standardization as a backup KEM to ML-KEM.
+    Security is based on the Quasi-Cyclic Syndrome Decoding problem.
+
+- term: XMSS
+  slug: xmss
+  definition: >-
+    eXtended Merkle Signature Scheme. A stateful hash-based digital signature
+    scheme specified in RFC 8391 and approved by NIST SP 800-208. Uses WOTS+
+    one-time signatures organized in a Merkle tree. Requires careful state
+    management to prevent one-time key reuse.
+
+- term: SPHINCS+
+  slug: sphincs-plus
+  definition: >-
+    A stateless hash-based signature framework that combines FORS few-time
+    signatures with a hypertree of XMSS trees. Standardized by NIST as
+    SLH-DSA in FIPS 205. The name SPHINCS+ refers to the pre-standardization
+    submission.
+
+- term: leanSig
+  slug: leansig
+  definition: >-
+    A hash-based signature scheme designed for post-quantum Ethereum consensus,
+    based on XMSS variants optimized for SNARK-based aggregation using the
+    Poseidon2 hash function. Proposed by Drake, Khovratovich, Kudinov, and
+    Wagner (ePrint 2025/055 and 2025/1332).
+
+- term: SHRINCS
+  slug: shrincs
+  definition: >-
+    A hybrid hash-based post-quantum signature scheme by Blockstream Research
+    combining stateful XMSS one-time signatures with a stateless SPHINCS+
+    fallback. Achieves approximately 324-byte stateful-mode signatures with
+    static seed backup. Built on the foundational analysis in ePrint 2025/2203.
+
 # ── Hardness assumptions ─────────────────────────────────────────────
 
 - term: Module-LWE
@@ -62,6 +109,22 @@
     Learning With Errors. A lattice problem where the adversary must recover
     a secret vector from noisy linear equations. The foundational hardness
     assumption for most lattice-based cryptography.
+
+- term: QCSD
+  slug: qcsd
+  definition: >-
+    Quasi-Cyclic Syndrome Decoding. The computational hardness problem
+    underlying HQC, which asks an adversary to find a low-weight error
+    vector given a syndrome computed with a quasi-cyclic parity check
+    matrix. A structured variant of the general syndrome decoding problem.
+
+- term: NTRU
+  slug: ntru
+  definition: >-
+    A family of lattice-based cryptographic constructions operating over
+    polynomial rings of the form Z[x]/(x^n - 1). Originally proposed by
+    Hoffstein, Pipher, and Silverman in 1996 for public-key encryption,
+    NTRU lattices now also underpin the FN-DSA signature scheme.
 
 # ── Security notions ─────────────────────────────────────────────────
 
@@ -146,6 +209,79 @@
     (e.g. a counter) between operations. Reusing state can be catastrophic,
     making deployment more complex.
 
+- term: WOTS+
+  slug: wots-plus
+  definition: >-
+    Winternitz One-Time Signature Plus. A one-time signature scheme that signs
+    a message digest by mapping each base-w digit to a position in a hash chain.
+    Used as the fundamental building block in XMSS, SLH-DSA, and leanSig. The
+    Winternitz parameter w controls a tradeoff between signature size and
+    computation.
+
+- term: Hypertree
+  slug: hypertree
+  definition: >-
+    A tree-of-trees construction used in SLH-DSA where multiple layers of
+    XMSS Merkle trees are stacked, with each layer's leaves authenticating
+    the roots of trees in the layer below. Enables signing a large number
+    of messages without maintaining state.
+
+- term: FORS
+  slug: fors
+  definition: >-
+    Forest of Random Subsets. A few-time signature scheme used as a component
+    of SLH-DSA. FORS signs a message digest by revealing secret leaf values
+    and their Merkle authentication paths from k independent binary trees.
+
+- term: Forward security
+  slug: forward-security
+  definition: >-
+    A property of signature schemes where compromise of the current signing
+    key does not enable an adversary to forge signatures that were produced
+    before the compromise. XMSS achieves forward security by deriving keys
+    through a one-way state update.
+
+- term: Poseidon2
+  slug: poseidon2
+  definition: >-
+    An arithmetization-friendly hash function designed for efficient
+    representation in zero-knowledge proof circuits, operating over prime
+    fields. Used in leanSig for Ethereum because its algebraic structure
+    maps directly to SNARK arithmetic constraints. Proposed by Grassi,
+    Khovratovich, and Schofnegger (AFRICACRYPT 2023).
+
+- term: SNARK aggregation
+  slug: snark-aggregation
+  definition: >-
+    A technique for combining multiple cryptographic signatures into a single
+    succinct proof that all signatures are valid. In post-quantum Ethereum,
+    STARK-based SNARKs are used to aggregate hash-based validator signatures
+    into a constant-size proof, replacing BLS signature aggregation.
+
+- term: Incomparable encoding
+  slug: incomparable-encoding
+  definition: >-
+    A technique used in leanSig and related XMSS variants where the
+    Winternitz chain values are encoded such that no valid signature component
+    can be derived from another, improving the size-verification tradeoff.
+    Introduced by Khovratovich, Kudinov, and Wagner (Crypto 2025).
+
+- term: Discrete Gaussian sampling
+  slug: discrete-gaussian-sampling
+  definition: >-
+    A sampling technique used in FN-DSA (Falcon) where signature components
+    are drawn from a discrete Gaussian distribution over a lattice. Requires
+    careful constant-time implementation to avoid side-channel leakage through
+    secret-dependent branching or memory access patterns.
+
+- term: Rejection sampling
+  slug: rejection-sampling
+  definition: >-
+    A technique used in ML-DSA signing where candidate signatures are generated
+    and discarded (aborted) if they would leak information about the secret
+    key. The signing algorithm retries with fresh randomness until a safe
+    signature is produced. Also known as the Fiat-Shamir with Aborts paradigm.
+
 # ── Standards & bodies ───────────────────────────────────────────────
 
 - term: NIST
@@ -172,6 +308,13 @@
   definition: >-
     Federal Information Processing Standard 205. The NIST standard
     specifying SLH-DSA (Stateless Hash-Based Digital Signature Algorithm).
+
+- term: FIPS 206
+  slug: fips-206
+  definition: >-
+    The forthcoming NIST Federal Information Processing Standard specifying
+    FN-DSA (formerly Falcon), a lattice-based digital signature scheme.
+    Currently in draft, expected to be finalized in 2026-2027.
 
 # ── Assumption families ──────────────────────────────────────────────
 
