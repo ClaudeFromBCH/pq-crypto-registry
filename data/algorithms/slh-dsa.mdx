@@ -1,0 +1,41 @@
+## Overview
+
+SLH-DSA (formerly SPHINCS+) is a stateless hash-based digital signature scheme standardized
+in [FIPS 205](https://csrc.nist.gov/pubs/fips/205/final). It provides post-quantum digital
+signatures whose security relies solely on the properties of cryptographic hash functions,
+making it the most conservative choice among the NIST post-quantum signature standards. FIPS
+205 specifies 12 parameter sets across three security levels, with both SHA-2 and SHAKE
+instantiations and a choice of small-signature ("s") or fast-signing ("f") variants.
+
+## Security basis
+
+SLH-DSA's security reduces to standard hash function properties: second-preimage resistance,
+pseudorandomness, and related multi-target variants. These assumptions are among the
+best-understood in all of cryptography, with hash function security studied intensively since
+the 1990s. Because no algebraic structure is involved, there is no known quantum speedup
+beyond generic Grover search (which at most halves the effective security level). This makes
+SLH-DSA a natural fallback if lattice assumptions are ever broken.
+
+## Key characteristics
+
+- **Stateless** — unlike XMSS or LMS, SLH-DSA does not require signers to track which
+  one-time keys have been used, greatly simplifying deployment and key management.
+- **Minimal assumptions** — security depends only on hash function properties, not on the
+  hardness of any algebraic problem.
+- **Tiny keys, large signatures** — public keys are 32 to 64 bytes, but signatures range
+  from 7,856 bytes (SLH-DSA-SHA2-128s) up to 49,856 bytes (SLH-DSA-SHAKE-256f).
+- **Speed-size tradeoff** — the "s" (small) variants produce shorter signatures with slower
+  signing; the "f" (fast) variants sign quickly but produce signatures roughly 2x larger.
+- **Hedged signing** — FIPS 205 supports randomized signing to protect against fault attacks.
+
+## Considerations
+
+The primary deployment constraint is signature size. Even the smallest parameter set
+(SLH-DSA-SHA2-128s at 7,856 bytes) produces signatures an order of magnitude larger than
+ML-DSA or FN-DSA. This makes SLH-DSA unsuitable as a drop-in replacement in
+bandwidth-constrained protocols like TLS without careful protocol-level engineering. Signing
+performance for the "s" variants can also be slow, on the order of hundreds of milliseconds
+on commodity hardware. Implementations must protect the PRF computation over SK.seed
+against side-channel leakage, as a leak of this master seed compromises all signing keys
+in the hypertree. NIST is actively working on additional smaller parameter sets with
+reduced signature-per-key limits for constrained use cases.

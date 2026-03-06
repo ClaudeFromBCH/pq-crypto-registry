@@ -1,0 +1,45 @@
+## Overview
+
+XMSS (eXtended Merkle Signature Scheme) is a stateful hash-based digital signature scheme
+specified in [RFC 8391](https://www.rfc-editor.org/rfc/rfc8391) and approved for federal use
+by [NIST SP 800-208](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-208.pdf).
+XMSS uses WOTS+ one-time signatures organized in a Merkle tree to create a many-time
+signature scheme. A multi-tree variant (XMSS^MT) supports signing up to 2^60 messages. XMSS
+was the first provably forward-secure and practical signature scheme with minimal security
+assumptions.
+
+## Security basis
+
+XMSS's security relies on the second-preimage resistance and pseudorandomness of the
+underlying hash function. Unlike lattice-based or code-based schemes, no algebraic structure
+is assumed. The security proof holds even if the collision resistance of the hash function is
+broken, requiring only the weaker property of second-preimage resistance. Forward security is
+a native property: compromising the current signing key does not enable forgery of signatures
+produced with earlier keys, because the state update is a one-way operation.
+
+## Key characteristics
+
+- **Stateful** — the signer must update and securely store a state counter after each
+  signature to track which one-time keys have been used. Reusing a one-time key
+  compromises the scheme.
+- **Forward-secure** — past signatures remain valid even if the current secret key is
+  compromised.
+- **Compact keys** — public keys are 68 bytes (for n=32 parameter sets). Signatures
+  range from approximately 2,500 to 2,820 bytes depending on tree height.
+- **Proven security** — XMSS has tight security reductions to standard hash function
+  properties in the standard model.
+- **Configurable capacity** — tree height h determines the maximum number of signatures
+  (2^h), trading key generation time for signing capacity.
+
+## Considerations
+
+Statefulness is the defining deployment challenge. Signing requires reading, incrementing,
+and securely persisting a counter. If the counter is lost, rewound (for example by restoring
+a backup), or duplicated across devices, the same one-time key may be used twice, which can
+leak the secret key. NIST SP 800-208 strongly recommends that XMSS be implemented in
+hardware security modules with non-volatile, non-cloneable state. Key generation for large
+tree heights (h=20) can take minutes to hours, as all 2^h WOTS+ keys must be generated or
+their Merkle tree computed. Multi-tree XMSS^MT mitigates this by splitting the tree into
+layers, but adds complexity. XMSS is well-suited for firmware signing, code signing, and
+other applications where a fixed, bounded number of signatures is acceptable and a hardware
+root of trust manages the state.

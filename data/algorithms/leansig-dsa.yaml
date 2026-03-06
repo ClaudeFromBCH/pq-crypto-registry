@@ -1,0 +1,60 @@
+id: leansig
+name: leanSig
+primitive: digital-signature
+assumption: hash-based
+standardization:
+  status: research
+  body: Ethereum Foundation
+  reference: ePrint 2025/055 and ePrint 2025/1332
+security:
+  assumption: Hash function second-preimage resistance (Poseidon2 over 31-bit prime fields)
+  security_notion: EUF-CMA
+  deterministic: false
+  statefulness: stateful
+performance:
+  relative:
+    keygen: slow
+    sign: medium
+    verify: medium
+  # No benchmarks block — verified benchmarks not yet available from a
+  # stable release; the reference Rust implementation is actively evolving.
+risk:
+  assumption: medium
+  implementation: high
+  side_channel: medium
+parameter_sets:
+  # Parameter sets from ePrint 2025/1332, Section 6.
+  # The scheme operates over a 31-bit prime field (Poseidon2).
+  # Key lifetime L = 2^32 (~8 years at one signature per slot).
+  # Classical security 128 bits, quantum security 64 bits.
+  # CAUTION: These are research parameters from an active proposal.
+  # Byte sizes below are approximate, derived from the paper's field-element
+  # counts. Exact wire-format sizes depend on serialization choices not yet
+  # finalized. Individual signatures are approximately 2.5 KB; the scheme
+  # is designed for SNARK-based aggregation reducing on-chain cost.
+  - name: leansig-hashing-optimized
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 64, sig_bytes: 2688 }
+  - name: leansig-size-optimized
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 64, sig_bytes: 2240 }
+  - name: leansig-balanced
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 64, sig_bytes: 2464 }
+capabilities:
+  - aggregation
+  - snark-aggregation
+implementations:
+  - name: leanSig
+    language: Rust
+    href: https://github.com/leanEthereum/leanSig
+    audited: false
+references:
+  - https://eprint.iacr.org/2025/055
+  - https://eprint.iacr.org/2025/1332
+  - https://leanroadmap.org/
+tags:
+  - hash-based
+  - digital-signature
+  - stateful
+  - ethereum

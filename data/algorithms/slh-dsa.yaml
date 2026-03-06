@@ -1,0 +1,88 @@
+id: slh-dsa
+name: SLH-DSA
+primitive: digital-signature
+assumption: hash-based
+standardization:
+  status: standard
+  body: NIST
+  reference: FIPS 205
+security:
+  assumption: Hash function second-preimage resistance
+  security_notion: EUF-CMA
+  deterministic: false
+  statefulness: stateless
+performance:
+  relative:
+    keygen: fast
+    sign: slow
+    verify: medium
+risk:
+  assumption: low
+  implementation: low
+  side_channel: low
+parameter_sets:
+  - name: SLH-DSA-SHA2-128s
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 64, sig_bytes: 7856 }
+  - name: SLH-DSA-SHA2-128f
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 64, sig_bytes: 17088 }
+  - name: SLH-DSA-SHA2-192s
+    nist_level: 3
+    sizes: { pk_bytes: 48, sk_bytes: 96, sig_bytes: 16224 }
+  - name: SLH-DSA-SHA2-192f
+    nist_level: 3
+    sizes: { pk_bytes: 48, sk_bytes: 96, sig_bytes: 35664 }
+  - name: SLH-DSA-SHA2-256s
+    nist_level: 5
+    sizes: { pk_bytes: 64, sk_bytes: 128, sig_bytes: 29792 }
+  - name: SLH-DSA-SHA2-256f
+    nist_level: 5
+    sizes: { pk_bytes: 64, sk_bytes: 128, sig_bytes: 49856 }
+  - name: SLH-DSA-SHAKE-128s
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 64, sig_bytes: 7856 }
+  - name: SLH-DSA-SHAKE-128f
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 64, sig_bytes: 17088 }
+  - name: SLH-DSA-SHAKE-192s
+    nist_level: 3
+    sizes: { pk_bytes: 48, sk_bytes: 96, sig_bytes: 16224 }
+  - name: SLH-DSA-SHAKE-192f
+    nist_level: 3
+    sizes: { pk_bytes: 48, sk_bytes: 96, sig_bytes: 35664 }
+  - name: SLH-DSA-SHAKE-256s
+    nist_level: 5
+    sizes: { pk_bytes: 64, sk_bytes: 128, sig_bytes: 29792 }
+  - name: SLH-DSA-SHAKE-256f
+    nist_level: 5
+    sizes: { pk_bytes: 64, sk_bytes: 128, sig_bytes: 49856 }
+capabilities:
+  - hedged-signing
+  - hardware-friendly
+  - hybrid-mode
+implementations:
+  - name: liboqs
+    language: C
+    href: https://github.com/open-quantum-safe/liboqs
+    audited: true
+  - name: pqcrypto
+    language: Rust
+    href: https://github.com/rustpq/pqcrypto
+    audited: false
+  - name: sphincsplus (ref)
+    language: C
+    href: https://github.com/sphincs/sphincsplus
+    audited: false
+  - name: go-slh-dsa
+    language: Go
+    href: https://github.com/trailofbits/go-slh-dsa
+    audited: false
+references:
+  - https://csrc.nist.gov/pubs/fips/205/final
+  - https://sphincs.org/
+tags:
+  - hash-based
+  - fips-205
+  - digital-signature
+  - stateless

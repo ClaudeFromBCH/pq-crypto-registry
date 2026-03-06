@@ -1,13 +1,17 @@
 ## Overview
 
-ML-KEM (formerly Kyber) is a lattice-based key encapsulation mechanism standardised in
+ML-KEM (formerly Kyber) is a lattice-based key encapsulation mechanism standardized in
 [FIPS 203](https://csrc.nist.gov/pubs/fips/203/final). It provides IND-CCA2 security under
-the Module Learning With Errors (MLWE) assumption.
+the Module Learning With Errors (Module-LWE) assumption and is the primary NIST-recommended
+KEM for post-quantum key establishment.
 
 ## Security basis
 
-Security reduces to the hardness of MLWE over module lattices. No known classical or quantum
-algorithm solves MLWE at these parameters in sub-exponential time.
+Security reduces to the hardness of Module-LWE over polynomial rings. Module-LWE is a
+structured variant of the Learning With Errors problem, which has been extensively studied
+since Regev's foundational work in 2005. No known classical or quantum algorithm solves
+Module-LWE at these parameters in sub-exponential time. The Fujisaki-Okamoto transform
+applied during decapsulation elevates CPA security to CCA2 security.
 
 ## Key characteristics
 
@@ -17,10 +21,13 @@ algorithm solves MLWE at these parameters in sub-exponential time.
   suitable for TLS and similar bandwidth-constrained protocols.
 - **Fast operations** — key generation, encapsulation, and decapsulation are all dominated
   by NTT operations and are fast on commodity hardware.
+- **Fixed shared secret** — the shared secret is always 32 bytes regardless of parameter set.
 
 ## Considerations
 
 Implementations must protect the decapsulation step against side-channel leakage. The
-Fujisaki–Okamoto transform used internally re-encrypts during decapsulation, and any
+Fujisaki-Okamoto transform used internally re-encrypts during decapsulation, and any
 timing variation in the comparison can leak the shared secret. Constant-time comparison
-and implicit rejection are mandatory per the FIPS 203 specification.
+and implicit rejection are mandatory per the FIPS 203 specification. The secret key
+includes the public key and a hash of it, bringing the total secret key size above what
+the underlying algebraic structure alone would require.

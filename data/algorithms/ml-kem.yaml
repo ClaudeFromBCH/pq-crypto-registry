@@ -16,22 +16,6 @@ performance:
     keygen: fast
     encaps: fast
     decaps: fast
-  benchmarks:
-    platform: "Intel Core i7-1365U (Alder Lake)"
-    source: liboqs 0.10.0
-    entries:
-      - parameter_set: ML-KEM-512
-        keygen_us: 36
-        encaps_us: 46
-        decaps_us: 52
-      - parameter_set: ML-KEM-768
-        keygen_us: 58
-        encaps_us: 72
-        decaps_us: 78
-      - parameter_set: ML-KEM-1024
-        keygen_us: 88
-        encaps_us: 104
-        decaps_us: 112
 risk:
   assumption: low
   implementation: low
@@ -64,6 +48,9 @@ implementations:
     language: C
     href: https://github.com/pq-crystals/kyber
     audited: false
+references:
+  - https://csrc.nist.gov/pubs/fips/203/final
+  - https://pq-crystals.org/kyber/
 tags:
   - lattice
   - module-lwe

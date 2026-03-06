@@ -1,0 +1,58 @@
+## Overview
+
+"Hash-based Signature Schemes for Bitcoin" is a research paper by Mikhail Kudinov and Jonas
+Nick of Blockstream Research ([ePrint 2025/2203](https://eprint.iacr.org/2025/2203)),
+proposing optimized SPHINCS+ parameter sets tailored to Bitcoin's specific requirements. The
+paper applies several recent optimizations to the FIPS 205 SLH-DSA construction, including
+SPHINCS+C (compressed FORS and WOTS+), TL-WOTS-TW (tight-length WOTS with tweakable hash
+functions), and PORS+FP (FORS variant with distinct-index sampling). By reducing the allowed
+number of signatures per public key below SPHINCS+'s default 2^64 limit, the construction
+achieves significantly smaller signature sizes while retaining NIST Level 1 security.
+
+Building on this foundational analysis, Blockstream subsequently introduced
+[SHRINCS](https://delvingbitcoin.org/t/shrincs-324-byte-stateful-post-quantum-signatures-with-static-backups/2158),
+a hybrid scheme that combines a stateless SPHINCS+ variant (as analyzed in the ePrint paper)
+with a stateful unbalanced XMSS tree of one-time signatures. SHRINCS achieves approximately
+324-byte signatures in stateful mode for normal operations, falling back to larger stateless
+signatures if the signer's state is lost. As of March 2026, Blockstream has deployed SHRINCS
+on the Liquid sidechain using Simplicity smart contracts, with a proposed Bitcoin opcode
+(OP_SHRINCSVERIFY) under discussion.
+
+## Security basis
+
+Security relies on the same hash function assumptions as SLH-DSA (second-preimage resistance
+and pseudorandomness of SHA-256), which are already foundational to Bitcoin's design. The
+paper argues that NIST Level 1 (128-bit classical security) is sufficient for Bitcoin, noting
+that quantum attacks require approximately 2^78 Toffoli-depth operations in practice with
+limited parallelization benefits. The reduced signature-per-key limits (2^20 to 2^40) lower
+the required hypertree size, enabling smaller signatures without weakening the underlying
+hash function assumption.
+
+## Key characteristics
+
+- **Bitcoin-optimized** — parameter sets are tuned for the specific constraints of Bitcoin
+  transactions, where combined public key plus signature size is the critical metric.
+- **Small public keys** — public keys are 32 bytes (256 bits), matching Bitcoin's existing
+  key size conventions and keeping the pk+sig total competitive with ML-DSA.
+- **Signature-limit tradeoff** — stateless signature sizes of 3,128 to 4,036 bytes are
+  achieved by limiting signatures per key to 2^20 through 2^40, a reasonable bound for
+  Bitcoin wallets.
+- **SHA-256 native** — the construction uses SHA-256 exclusively, aligning with Bitcoin's
+  existing hash function dependency and simplifying implementation in Bitcoin Script.
+- **Hybrid stateful/stateless (SHRINCS)** — the follow-on SHRINCS design combines a small
+  stateful path (~324 bytes when few signatures have been produced) with the stateless
+  fallback, allowing static seed backup without state loss risk.
+
+## Considerations
+
+The ePrint 2025/2203 parameter sets are a research proposal and have not undergone the same
+level of public review as FIPS 205. The reduced signature limits mean that a single key pair
+can only produce a bounded number of signatures (e.g., 2^20 is roughly one million), which is
+adequate for typical Bitcoin wallet usage but constrains reuse. The paper notes limitations
+around hierarchical deterministic (HD) wallet derivation: non-hardened public child key
+derivation is not efficiently achievable with hash-based schemes, limiting compatibility with
+BIP-32-style key derivation. Multi-signature and threshold signing constructions remain an
+open challenge, with current approaches offering limited efficiency gains over independent
+signatures. SHRINCS introduces additional statefulness concerns: while the stateless fallback
+mitigates the catastrophic failure mode of pure stateful schemes, correct state management
+remains important for achieving the compact stateful-mode signatures.

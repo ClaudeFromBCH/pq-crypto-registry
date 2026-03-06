@@ -5,13 +5,17 @@ import type { Algorithm } from './schema';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content', 'algorithms');
 
+/** Maps algorithm id → YAML/MDX filename stem (without extension). */
+const idToFileStem = new Map<string, string>();
+
 export function getAllAlgorithms(): Algorithm[] {
   const files = fs.readdirSync(CONTENT_DIR).filter(f => f.endsWith('.yaml'));
 
   return files.map(file => {
     const raw = fs.readFileSync(path.join(CONTENT_DIR, file), 'utf-8');
-    // Validation is handled by scripts/validate-content.ts before build.
-    return parseYaml(raw) as Algorithm;
+    const algo = parseYaml(raw) as Algorithm;
+    idToFileStem.set(algo.id, path.basename(file, '.yaml'));
+    return algo;
   });
 }
 
@@ -20,17 +24,19 @@ export function getAlgorithm(id: string): Algorithm | undefined {
 }
 
 /**
- * Returns MDX source for an algorithm. Resolves path safely to prevent
- * path traversal (e.g. id containing ".." or path separators).
+ * Returns MDX source for an algorithm. Uses the YAML filename stem
+ * (not the algorithm id) to locate the corresponding .mdx file.
+ * Resolves path safely to prevent path traversal.
  */
 export function getAlgorithmMdx(id: string): string {
-  // Explicitly reject path traversal and path separators in id
-  if (id.includes('..') || id.includes(path.sep)) {
+  const stem = idToFileStem.get(id);
+  if (!stem) return '';
+
+  if (stem.includes('..') || stem.includes(path.sep)) {
     return '';
   }
   const base = path.resolve(CONTENT_DIR);
-  const mdxPath = path.resolve(base, `${id}.mdx`);
-  // Resolved path must be exactly base or under base (base + sep + segment)
+  const mdxPath = path.resolve(base, `${stem}.mdx`);
   const baseWithSep = base + path.sep;
   if (mdxPath !== base && !mdxPath.startsWith(baseWithSep)) {
     return '';

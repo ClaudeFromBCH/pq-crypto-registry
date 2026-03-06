@@ -1,0 +1,40 @@
+## Overview
+
+FN-DSA (formerly Falcon) is a lattice-based digital signature scheme selected by NIST for
+standardization as [FIPS 206](https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization),
+currently in draft. The name stands for FFT (Fast Fourier Transform) over NTRU-Lattice-Based
+Digital Signature Algorithm. FN-DSA produces the smallest signatures among NIST's
+post-quantum signature selections, making it attractive for bandwidth-constrained applications
+such as certificate chains in TLS and PKI.
+
+## Security basis
+
+FN-DSA's security is based on the hardness of the Short Integer Solution problem over NTRU
+lattices, instantiated using the GPV (Gentry-Peikert-Vaikuntanathan) framework for
+lattice-based signatures with a fast Fourier sampling trapdoor. NTRU lattices have been
+studied since the late 1990s, and no efficient quantum algorithm is known for solving the
+underlying problems at the proposed parameters. The scheme achieves EUF-CMA security in the
+random oracle model.
+
+## Key characteristics
+
+- **Compact signatures** — FN-DSA-512 signatures are approximately 666 bytes, roughly one
+  third the size of ML-DSA-44 signatures at a comparable security level.
+- **Fast verification** — verification requires only NTT-based polynomial arithmetic and
+  hash evaluations, making it very fast relative to signing.
+- **Complex signing** — signing requires discrete Gaussian sampling over NTRU lattices
+  using a fast Fourier transform (FFT) tree, which is substantially more complex to
+  implement than ML-DSA's rejection sampling.
+- **Two parameter sets** — FN-DSA-512 targets NIST Level 1 and FN-DSA-1024 targets NIST
+  Level 5.
+
+## Considerations
+
+The primary deployment challenge is the complexity of correct, side-channel-resistant
+implementation. The discrete Gaussian sampler uses floating-point arithmetic in the reference
+implementation and requires careful constant-time engineering to avoid secret-dependent
+branches and memory access patterns. Hardware implementations are more difficult than for
+ML-DSA or SLH-DSA because of the FFT tree traversal and precision requirements. Key
+generation is slower than ML-DSA due to the need to compute an NTRU trapdoor basis. FIPS
+206 is expected to finalize in 2026-2027; the exact byte sizes may differ slightly from the
+Falcon round 3 submission values listed here.
