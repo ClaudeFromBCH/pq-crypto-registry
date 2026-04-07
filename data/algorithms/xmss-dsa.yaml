@@ -23,17 +23,17 @@ risk:
 parameter_sets:
   # Sizes computed from RFC 8391 formulas. For n=32, w=16: len=67.
   # pk = 4 (OID) + n (root) + n (SEED) = 68 bytes.
-  # sig = ceil(h/8) + n + len*n + h*n.
+  # sig = 4 (index) + n + (len + h) * n  (XMSS single-tree, 4-byte index).
   # sk (compact, pseudorandom keygen) = 4 (OID) + 4 (idx) + 4*n = 136 bytes.
   - name: XMSS-SHA2_10_256
     nist_level: 1
-    sizes: { pk_bytes: 68, sk_bytes: 136, sig_bytes: 2498 }
+    sizes: { pk_bytes: 68, sk_bytes: 136, sig_bytes: 2500 }
   - name: XMSS-SHA2_16_256
     nist_level: 1
-    sizes: { pk_bytes: 68, sk_bytes: 136, sig_bytes: 2690 }
+    sizes: { pk_bytes: 68, sk_bytes: 136, sig_bytes: 2692 }
   - name: XMSS-SHA2_20_256
     nist_level: 1
-    sizes: { pk_bytes: 68, sk_bytes: 136, sig_bytes: 2819 }
+    sizes: { pk_bytes: 68, sk_bytes: 136, sig_bytes: 2820 }
 capabilities:
   - forward-secrecy
   - hardware-friendly

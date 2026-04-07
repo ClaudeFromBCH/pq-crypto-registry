@@ -1,0 +1,64 @@
+id: shrincs
+name: SHRINCS
+primitive: digital-signature
+assumption: hash-based
+standardization:
+  status: research
+  body: Blockstream Research
+  reference: ePrint 2025/2203
+security:
+  assumption: Hash function second-preimage resistance (SHA-256)
+  security_notion: EUF-CMA
+  deterministic: false
+  statefulness: stateful
+performance:
+  relative:
+    keygen: fast
+    sign: medium
+    verify: medium
+  # No benchmarks block — verification cost is documented in Liquid weight
+  # units (kWU) but not in CPU cycle benchmarks on a reference platform.
+risk:
+  assumption: low
+  implementation: high
+  side_channel: low
+parameter_sets:
+  # Parameter sets from ePrint 2025/2203, Appendix (Kudinov & Nick).
+  # SHRINCS combines a stateful unbalanced XMSS tree (WOTS+C) with a
+  # stateless SPHINCS+ fallback under a single public key.
+  # Stateful signature size = N + WOTS_SIGN_LEN + q*N bytes (q = sigs produced).
+  # pk = seed (N) + root (N) = 2N = 32 bytes (N=16 at NIST Level 1).
+  # sk = seed + prf + sf + sl + pk = 6N = 96 bytes.
+  # Backup seed = 3N = 48 bytes (deterministically derives full key pair).
+  # sig_bytes below is for the stateful path at q=1 (first signature).
+  - name: shrincs-128-stateful
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 96, sig_bytes: 324 }
+  # SHRINCS-L: parameter set deployed on Liquid sidechain via Simplicity.
+  - name: shrincs-l-stateful
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 96, sig_bytes: 1092 }
+  - name: shrincs-l-stateless
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 96, sig_bytes: 4396 }
+capabilities:
+  - hardware-friendly
+  - hybrid-mode
+implementations:
+  - name: shrincs-cpp
+    language: C++
+    href: https://github.com/BlockstreamResearch/shrincs-cpp
+    audited: false
+  - name: shrincs-simplicity-verifier
+    language: Simplicity
+    href: https://github.com/BlockstreamResearch/shrincs-simplicity-verifier
+    audited: false
+references:
+  - https://eprint.iacr.org/2025/2203
+  - https://delvingbitcoin.org/t/shrincs-324-byte-stateful-post-quantum-signatures-with-static-backups/2158
+  - https://blog.blockstream.com/shrincs-324-byte-stateful-post-quantum-signatures-with-static-backups/
+tags:
+  - hash-based
+  - digital-signature
+  - stateful
+  - bitcoin

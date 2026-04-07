@@ -9,7 +9,7 @@ standardization:
 security:
   assumption: Module-LWE
   security_notion: IND-CCA2
-  deterministic: true
+  deterministic: false
   statefulness: stateless
 performance:
   relative:

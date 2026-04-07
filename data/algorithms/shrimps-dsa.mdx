@@ -1,0 +1,49 @@
+## Overview
+
+SHRIMPS is a stateful hash-based post-quantum signature scheme by Jonas Nick of
+[Blockstream Research](https://delvingbitcoin.org/t/shrimps-2-5-kb-post-quantum-signatures-across-multiple-stateful-devices/2355),
+extending the single-device [SHRINCS](/algorithms/shrincs) scheme to support multiple
+independent signing devices initialized from the same seed. SHRIMPS produces approximately
+2.5 KB signatures at NIST Level 1 — roughly 3x smaller than SLH-DSA — while allowing up to
+1,024 devices to sign independently without state synchronization. The scheme was announced on
+[Delving Bitcoin](https://delvingbitcoin.org/t/shrimps-2-5-kb-post-quantum-signatures-across-multiple-stateful-devices/2355)
+in March 2026 and builds on the foundational analysis in
+["Hash-based Signature Schemes for Bitcoin"](https://eprint.iacr.org/2025/2203) (ePrint
+2025/2203, Kudinov & Nick).
+
+## Security basis
+
+Security relies solely on the collision resistance and preimage resistance of SHA-256, with no
+reliance on lattice problems or other structured algebraic assumptions. This places SHRIMPS in
+the same trust model as Bitcoin's proof-of-work and address commitments. The scheme targets
+NIST Level 1 (128-bit classical security). The multi-target parameter q_s is set to n_dev
+(the maximum number of device initializations, typically 2^10 = 1024), which determines the
+compact SPHINCS+ instance's security margin.
+
+## Key characteristics
+
+- **Multi-device support** — unlike SHRINCS, which is limited to a single signing device,
+  SHRIMPS allows multiple devices initialized from the same seed to independently produce
+  compact signatures. This directly addresses Bitcoin's common wallet backup workflow of
+  loading the same seed onto multiple hardware devices.
+- **Compact signatures** — the compact path produces approximately 2,564-byte signatures at
+  NIST Level 1, roughly 3x smaller than SLH-DSA's 7,856 bytes.
+- **Graceful degradation** — if a device exhausts its compact signing budget or loses state,
+  it falls back to larger stateless signatures (up to ~7.8 KB). The scheme never fails, it
+  just produces larger signatures under suboptimal conditions.
+- **SHA-256 native** — all internal hash operations use SHA-256, aligning with Bitcoin's
+  existing cryptographic foundations.
+- **Static seed backup** — full key recovery from a single 32-byte master seed, compatible
+  with existing BIP-39 mnemonic backup workflows.
+
+## Considerations
+
+SHRIMPS signatures (~2.5 KB) are significantly larger than SHRINCS stateful signatures
+(~324 bytes), reflecting the cost of multi-device support. The scheme requires each device to
+maintain a monotonically increasing counter per key; the state required is small but must not
+be lost for compact signing. The signing cost is substantial: 2.4 million to 41 million
+SHA-256 compression function calls depending on parameters, which is relevant for constrained
+hardware wallets. Non-hardened HD key derivation (BIP-32) is not efficiently achievable,
+limiting compatibility with existing wallet derivation standards. Deploying on Bitcoin mainnet
+would require a soft fork. The construction exists as a Delving Bitcoin forum post and has not
+yet undergone formal academic peer review.

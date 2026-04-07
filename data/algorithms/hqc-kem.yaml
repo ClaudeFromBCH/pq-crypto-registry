@@ -9,7 +9,7 @@ standardization:
 security:
   assumption: Quasi-Cyclic Syndrome Decoding (QCSD)
   security_notion: IND-CCA2
-  deterministic: true
+  deterministic: false
   statefulness: stateless
 performance:
   relative:
@@ -18,7 +18,7 @@ performance:
     decaps: medium
   benchmarks:
     platform: "Intel Core i7-11850H (2.5 GHz)"
-    source: HQC reference implementation (AVX2)
+    source: HQC optimized implementation (AVX2)
     entries:
       - parameter_set: HQC-128
         keygen_us: 30
@@ -53,7 +53,7 @@ capabilities:
 implementations:
   - name: hqc (ref)
     language: C
-    href: https://github.com/pqc-hqc/hqc
+    href: https://gitlab.com/pqc-hqc/hqc/
     audited: false
   - name: liboqs
     language: C

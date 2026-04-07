@@ -10,9 +10,28 @@ const inter = Inter({
   display: 'swap'
 });
 
+const siteUrl = 'https://registry.projecteleven.com';
+const title = 'Post-Quantum Cryptography Registry';
+const description =
+  'An open reference for post-quantum cryptographic algorithms. Compare parameter sizes, security assumptions, risk profiles, and implementation status across NIST standards and emerging PQ schemes.';
+
 export const metadata: Metadata = {
-  title: 'PQ Crypto Registry',
-  description: 'A reference registry of post-quantum cryptographic algorithms.'
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    siteName: title,
+    url: siteUrl,
+    type: 'website',
+    locale: 'en_US'
+  },
+  twitter: {
+    card: 'summary',
+    title,
+    description
+  }
 };
 
 export default function RootLayout({

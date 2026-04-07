@@ -8,7 +8,7 @@ standardization:
   reference: FIPS 204
 security:
   assumption: Module-LWE & Module-SIS
-  security_notion: EUF-CMA
+  security_notion: SUF-CMA
   deterministic: false
   statefulness: stateless
 performance:

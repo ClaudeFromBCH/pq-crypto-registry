@@ -69,7 +69,7 @@
   definition: >-
     A hash-based signature scheme designed for post-quantum Ethereum consensus,
     based on XMSS variants optimized for SNARK-based aggregation using the
-    Poseidon2 hash function. Proposed by Drake, Khovratovich, Kudinov, and
+    Poseidon hash function. Proposed by Drake, Khovratovich, Kudinov, and
     Wagner (ePrint 2025/055 and 2025/1332).
 
 - term: SHRINCS
@@ -79,6 +79,14 @@
     combining stateful XMSS one-time signatures with a stateless SPHINCS+
     fallback. Achieves approximately 324-byte stateful-mode signatures with
     static seed backup. Built on the foundational analysis in ePrint 2025/2203.
+
+- term: SHRIMPS
+  slug: shrimps
+  definition: >-
+    A stateful hash-based post-quantum signature scheme by Blockstream Research
+    extending SHRINCS to support multiple independent signing devices from the
+    same seed. Produces approximately 2.5 KB compact signatures at NIST Level 1.
+    Announced on Delving Bitcoin in March 2026.
 
 # ── Hardness assumptions ─────────────────────────────────────────────
 
@@ -241,14 +249,16 @@
     before the compromise. XMSS achieves forward security by deriving keys
     through a one-way state update.
 
-- term: Poseidon2
-  slug: poseidon2
+- term: Poseidon
+  slug: poseidon
   definition: >-
-    An arithmetization-friendly hash function designed for efficient
+    A family of arithmetization-friendly hash functions designed for efficient
     representation in zero-knowledge proof circuits, operating over prime
     fields. Used in leanSig for Ethereum because its algebraic structure
-    maps directly to SNARK arithmetic constraints. Proposed by Grassi,
-    Khovratovich, and Schofnegger (AFRICACRYPT 2023).
+    maps directly to SNARK arithmetic constraints. The original Poseidon was
+    proposed by Grassi, Khovratovich, Rechberger, Roy, and Schofnegger
+    (USENIX Security 2021). Poseidon2, a faster variant, was proposed by
+    Grassi, Khovratovich, and Schofnegger (AFRICACRYPT 2023).
 
 - term: SNARK aggregation
   slug: snark-aggregation

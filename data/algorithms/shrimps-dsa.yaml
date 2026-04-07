@@ -1,0 +1,56 @@
+id: shrimps
+name: SHRIMPS
+primitive: digital-signature
+assumption: hash-based
+standardization:
+  status: research
+  body: Blockstream Research
+  reference: ePrint 2025/2203
+security:
+  assumption: Hash function second-preimage resistance (SHA-256)
+  security_notion: EUF-CMA
+  deterministic: false
+  statefulness: stateful
+performance:
+  relative:
+    keygen: fast
+    sign: slow
+    verify: medium
+  # No benchmarks block — signing cost ranges from 2.4M to 41M SHA-256
+  # compression calls depending on parameters; no CPU cycle benchmarks
+  # on a reference platform are available.
+risk:
+  assumption: low
+  implementation: high
+  side_channel: low
+parameter_sets:
+  # Parameter sets from the Delving Bitcoin post (Jonas Nick, March 2026).
+  # SHRIMPS combines two SPHINCS+ instances (compact + fallback) under one
+  # public key, enabling multiple devices from the same seed.
+  # n_dev = 2^10 (max 1024 device initializations from one seed).
+  # NIST Level 1 (128-bit classical security).
+  # JUDGEMENT CALL: pk_bytes and sk_bytes are not explicitly stated in the
+  # Delving Bitcoin post
+  - name: shrimps-compact
+    nist_level: 1
+    sizes: { pk_bytes: 16, sk_bytes: 32, sig_bytes: 2564 }
+  # Fallback path when compact signing budget is exhausted or state is lost.
+  - name: shrimps-fallback
+    nist_level: 1
+    sizes: { pk_bytes: 16, sk_bytes: 32, sig_bytes: 7856 }
+capabilities:
+  - hardware-friendly
+  - hybrid-mode
+implementations:
+  - name: SPHINCS-Parameters
+    language: Python
+    href: https://github.com/BlockstreamResearch/SPHINCS-Parameters
+    audited: false
+references:
+  - https://eprint.iacr.org/2025/2203
+  - https://delvingbitcoin.org/t/shrimps-2-5-kb-post-quantum-signatures-across-multiple-stateful-devices/2355
+tags:
+  - hash-based
+  - digital-signature
+  - stateful
+  - bitcoin

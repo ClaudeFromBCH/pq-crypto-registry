@@ -1,0 +1,52 @@
+## Overview
+
+SHRINCS is a hybrid stateful/stateless hash-based signature scheme by Mikhail Kudinov and
+Jonas Nick of [Blockstream Research](https://blog.blockstream.com/shrincs-324-byte-stateful-post-quantum-signatures-with-static-backups/),
+described in ["Hash-based Signature Schemes for Bitcoin"](https://eprint.iacr.org/2025/2203)
+(ePrint 2025/2203, December 2025). It combines a stateful unbalanced XMSS tree using WOTS+C
+(Winternitz One-Time Signature with Checksum) with a stateless SPHINCS+ fallback under a
+single 32-byte public key. During normal operation, SHRINCS produces signatures as small as
+324 bytes at NIST Level 1 — over 7x smaller than ML-DSA-44 and 24x smaller than SLH-DSA.
+
+The scheme was first introduced on [Delving Bitcoin](https://delvingbitcoin.org/t/shrincs-324-byte-stateful-post-quantum-signatures-with-static-backups/2158)
+in December 2025. As of March 2026, Blockstream has deployed SHRINCS verification on the
+Liquid sidechain mainnet using Simplicity smart contracts, demonstrating production-viable
+post-quantum transaction signing.
+
+## Security basis
+
+Security relies on the same hash function assumptions as SLH-DSA: second-preimage resistance
+and pseudorandomness of SHA-256, which are already foundational to Bitcoin's design. The
+unbalanced XMSS tree provides standard Merkle tree security, while the WOTS+C component
+relies on the one-wayness of the hash chain. The stateless fallback inherits the security
+properties of SPHINCS+. NIST Level 1 (128-bit classical security) is targeted, consistent
+with the argument that quantum attacks require approximately 2^78 Toffoli-depth operations
+in practice.
+
+## Key characteristics
+
+- **Ultra-compact stateful signatures** — at q=1 (first signature from a key), the stateful
+  path produces a 324-byte signature, growing by 16 bytes per additional signature. This
+  exploits Bitcoin's typical one-spend-per-key usage pattern.
+- **Graceful stateless fallback** — if signing state is lost (e.g., seed restored to a new
+  device), the scheme degrades to stateless SPHINCS+ signatures (3-8 KB) rather than failing
+  catastrophically, unlike pure stateful schemes such as XMSS.
+- **Static seed backup** — the entire key material can be recovered from a 32-byte master
+  seed alone, without needing to back up state. This aligns with existing Bitcoin wallet
+  backup workflows (BIP-39 mnemonics).
+- **SHA-256 native** — all internal hash operations use SHA-256, aligning with Bitcoin's
+  existing hash function dependency and simplifying implementation.
+- **Deployed on Liquid** — SHRINCS verification has been deployed on Liquid mainnet via
+  Simplicity smart contracts, securing real funds on a production sidechain.
+
+## Considerations
+
+SHRINCS is designed for single-device signing. If a wallet seed is loaded onto multiple
+devices, only one device can use the compact stateful path; others must use the larger
+stateless fallback. The multi-device extension [SHRIMPS](/algorithms/shrimps) addresses this
+limitation. Correct state management remains important for achieving compact signatures: while
+state loss is not catastrophic (unlike pure XMSS), it permanently forces the affected key to
+stateless-only signing. Deploying SHRINCS on Bitcoin mainnet would require a soft fork to add
+a new opcode (OP_SHRINCSVERIFY); the Liquid deployment sidesteps this via Simplicity's
+expressiveness. Non-hardened HD key derivation (BIP-32) is not efficiently achievable with
+hash-based schemes, limiting compatibility with existing wallet derivation standards.
