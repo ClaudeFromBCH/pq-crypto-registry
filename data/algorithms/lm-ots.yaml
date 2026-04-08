@@ -1,0 +1,49 @@
+id: lm-ots
+name: LM-OTS
+primitive: digital-signature
+assumption: hash-based
+
+standardization:
+  status: standard
+  body: IETF/NIST
+  reference: RFC 8554 / NIST SP 800-208
+
+security:
+  assumption: SHA-256 preimage resistance
+  security_notion: EUF-CMA (one-time)
+  deterministic: true
+  statefulness: stateful
+
+performance:
+  relative:
+    keygen: fast
+    sign: fast
+    verify: fast
+
+risk:
+  assumption: high
+  implementation: high
+  side_channel: medium
+
+parameter_sets:
+  - name: LMOTS_SHA256_N32_W4
+    nist_level: 1
+    sizes: { pk_bytes: 32, sk_bytes: 2144, sig_bytes: 2144 }
+
+capabilities:
+  - aggregation
+
+implementations:
+  - name: Quantumroot (BCH)
+    language: CashAssembly
+    href: https://github.com/bitjson/quantumroot
+    audited: false
+
+references:
+  - https://datatracker.ietf.org/doc/html/rfc8554
+  - https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-208.pdf
+  - https://blog.bitjson.com/quantumroot/
+  - https://blog.bitjson.com/quantumroot-on-chipnet/
+
+tags:
+  - hash-based

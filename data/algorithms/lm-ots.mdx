@@ -1,0 +1,58 @@
+## Overview
+ 
+LM-OTS (Leighton-Micali One-Time Signature) is a foundational pure hash-based one-time signature scheme and a Winternitz-style optimization of the original Lamport signatures. It is standardized in RFC 8554 and recommended in NIST SP 800-208.
+ 
+Security rests solely on the preimage and second-preimage resistance of SHA-256 — one of the most conservative assumptions in post-quantum cryptography, with no reliance on lattices, codes, or other structured problems.
+ 
+## Real-World Deployment: Quantumroot on Bitcoin Cash
+ 
+LM-OTS powers **Quantumroot**, a practical Schnorr + LM-OTS hybrid vault on Bitcoin Cash (BCH):
+ 
+- Pre-quantum spends use efficient Schnorr signatures.
+- Quantum-resistant spends switch to LM-OTS via opt-in CashTokens and script.
+- Fully implemented and live on BCH Chipnet today.
+- Mainnet activation follows the Layla network upgrade (targeted May 15, 2026), which adds loops, functions, and introspection to the CashVM for improved efficiency.
+ 
+This design leverages BCH’s parallel UTXO model to support large quantum-safe sweeps (hundreds of inputs in a single modest-sized transaction) while remaining fully opt-in.
+ 
+## Security Basis
+ 
+The scheme targets approximately 256-bit classical security and 128-bit post-quantum security (accounting for Grover’s algorithm). Each key pair is strictly one-time; state management for multiple uses occurs via Merkle trees (as in LMS) or vault constructions like Quantumroot.
+ 
+Risk ratings (subjective, per registry guidelines):
+- Assumption strength: very high (pure hash properties).
+- Implementation: high (simple hash chains; public Quantumroot CashAssembly code available).
+- Side-channel resistance: medium-high (constant-time hash implementations mitigate timing/power attacks).
+ 
+## Parameters
+ 
+The primary parameter set highlighted here is `LMOTS_SHA256_N32_W4` (n=32 bytes, Winternitz parameter w=4). This balances size and performance for blockchain vault use.
+ 
+## Sizes and Performance
+ 
+In the Quantumroot hybrid vault:
+- Public key commitment: 32 bytes.
+- Core LM-OTS signature component: ~2,144 bytes.
+- Full quantum unlock (including script overhead): ~2,180–2,500 bytes per input.
+- Typical effective spend: ~1.5 KB per UTXO in aggregated sweeps.
+ 
+This is significantly more compact than full stateless schemes like SLH-DSA-SHA2-128s (~7,856 bytes signatures) while remaining practical for migration and cold-storage scenarios.
+ 
+Signing and verification are fast (primarily hash operations). The Layla upgrade will further improve contract execution and wallet integration.
+ 
+## Use Cases
+ 
+- Quantum-resistant opt-in vaults and migration paths on blockchains.
+- Conservative environments preferring minimal cryptographic assumptions.
+- Building block for stateful multi-use schemes (LMS, XMSS).
+ 
+Pure LM-OTS is stateful/one-time per key, with state handled via the UTXO model in BCH deployments. It complements other hash-based entries such as XMSS and SHRINCS/SHRIMPS.
+ 
+## References
+ 
+- [RFC 8554](https://datatracker.ietf.org/doc/html/rfc8554)
+- [NIST SP 800-208](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-208.pdf)
+- Quantumroot implementation and demos: [GitHub](https://github.com/bitjson/quantumroot)
+- Quantumroot details: [blog.bitjson.com/quantumroot](https://blog.bitjson.com/quantumroot/)
+ 
+Feedback and corrections welcome — especially on parameter tuning, benchmarks, or additional deployments.
